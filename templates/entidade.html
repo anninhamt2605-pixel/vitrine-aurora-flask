@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<section class="cabecalho-pagina">
+    <span class="etiqueta">Area da plataforma</span>
+    <h1>{{ titulo }}</h1>
+    <p>{{ subtitulo }}</p>
+</section>
+
+<section class="grade-cards">
+    {% for item in itens %}
+    <article class="card">
+        <div class="card-icone">{{ item.titulo[0] }}</div>
+        <h2>{{ item.titulo }}</h2>
+        <p>{{ item.descricao }}</p>
+        <span class="detalhe">{{ item.detalhe }}</span>
+    </article>
+    {% endfor %}
+</section>
+{% endblock %}
