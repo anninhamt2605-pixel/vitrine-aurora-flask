@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="cabecalho-pagina cabecalho-com-acao">
+    <div><span class="etiqueta">CRUD de anúncios</span><h1>Anúncios</h1><p>Gerencie os produtos disponíveis na plataforma.</p></div>
+    <a class="botao primario" href="{{ url_for('anuncio_novo') }}">+ Novo anúncio</a>
+</section>
+<div class="tabela-wrap"><table><thead><tr><th>ID</th><th>Produto</th><th>Preço</th><th>Anunciante</th><th>Categoria</th><th>Data</th><th>Ações</th></tr></thead><tbody>
+{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td><strong>{{ registro.titulo }}</strong><small>{{ registro.descricao }}</small></td><td>{{ registro.preco|moeda }}</td><td>{{ registro.usuario.nome }}</td><td>{{ registro.categoria.nome }}</td><td>{{ registro.data_publicacao|data_br }}</td><td class="acoes-tabela"><a class="acao editar" href="{{ url_for('anuncio_editar', id=registro.id) }}">Editar</a><a class="acao excluir" href="{{ url_for('anuncio_excluir', id=registro.id) }}">Excluir</a></td></tr>
+{% else %}<tr><td colspan="7" class="vazio">Nenhum anúncio cadastrado.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

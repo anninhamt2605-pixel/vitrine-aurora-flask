@@ -1,23 +1,41 @@
-# Vitrine Aurora - Projeto Flask
+# Vitrine Aurora — Trilha 2
 
-Projeto academico de e-commerce desenvolvido para demonstrar estrutura inicial em Flask, menu de navegacao e rotas correspondentes as entidades do MER.
+Continuação do projeto acadêmico de e-commerce desenvolvido em Flask por **Anna Julia Torres Martins de Deus**.
 
-## Funcionalidades demonstradas
+Nesta etapa, os dados deixaram de ser apenas exemplos escritos nas páginas e passaram a ser armazenados em um banco SQLite. O sistema possui CRUD completo para todas as entidades previstas no MER.
 
-- Usuarios
-- Categorias
-- Anuncios
-- Perguntas e respostas
-- Compras diretas, sem carrinho
-- Favoritos
-- Relatorio de compras
-- Relatorio de vendas
+## Funcionalidades
+
+- CRUD de usuários;
+- CRUD de categorias;
+- CRUD de anúncios;
+- CRUD de perguntas e respostas;
+- CRUD de compras diretas, sem carrinho;
+- CRUD de favoritos;
+- relatórios de compras e vendas atualizados a partir do banco de dados;
+- confirmação antes de cada exclusão.
+
+## Tecnologias
+
+- Python;
+- Flask;
+- Flask-SQLAlchemy;
+- SQLite;
+- HTML, CSS e Jinja.
 
 ## Como executar
 
-1. Crie e ative um ambiente virtual Python.
-2. Instale as dependencias com `pip install -r requirements.txt`.
-3. Execute `python app.py`.
-4. Abra `http://127.0.0.1:5000` no navegador.
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install -r requirements.txt
+python app.py
+```
 
-Projeto academico - Anna - 2026.
+Depois, abra `http://127.0.0.1:5000` no navegador.
+
+O arquivo `vitrine_aurora.db` é criado automaticamente na primeira execução.
+
+## Repositório
+
+https://github.com/anninhamt2605-pixel/vitrine-aurora-flask.git

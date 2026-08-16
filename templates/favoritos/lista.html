@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="cabecalho-pagina cabecalho-com-acao">
+    <div><span class="etiqueta">CRUD de favoritos</span><h1>Favoritos</h1><p>Gerencie os anúncios salvos pelos usuários.</p></div>
+    <a class="botao primario" href="{{ url_for('favorito_novo') }}">+ Novo favorito</a>
+</section>
+<div class="tabela-wrap"><table><thead><tr><th>ID</th><th>Usuário</th><th>Anúncio favorito</th><th>Categoria</th><th>Data</th><th>Ações</th></tr></thead><tbody>
+{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td>{{ registro.usuario.nome }}</td><td>{{ registro.anuncio.titulo }}</td><td>{{ registro.anuncio.categoria.nome }}</td><td>{{ registro.data_adicao|data_br }}</td><td class="acoes-tabela"><a class="acao editar" href="{{ url_for('favorito_editar', id=registro.id) }}">Editar</a><a class="acao excluir" href="{{ url_for('favorito_excluir', id=registro.id) }}">Excluir</a></td></tr>
+{% else %}<tr><td colspan="6" class="vazio">Nenhum favorito cadastrado.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

@@ -1,5 +1,7 @@
 .venv/
+.venv-test/
 venv/
 __pycache__/
 *.pyc
+*.db
 .vscode/

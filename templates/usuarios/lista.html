@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<section class="cabecalho-pagina cabecalho-com-acao">
+    <div><span class="etiqueta">CRUD de usuários</span><h1>Usuários</h1><p>Cadastre e gerencie as pessoas da plataforma.</p></div>
+    <a class="botao primario" href="{{ url_for('usuario_novo') }}">+ Novo usuário</a>
+</section>
+<div class="tabela-wrap"><table><thead><tr><th>ID</th><th>Nome</th><th>E-mail</th><th>Ações</th></tr></thead><tbody>
+{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td>{{ registro.nome }}</td><td>{{ registro.email }}</td><td class="acoes-tabela"><a class="acao editar" href="{{ url_for('usuario_editar', id=registro.id) }}">Editar</a><a class="acao excluir" href="{{ url_for('usuario_excluir', id=registro.id) }}">Excluir</a></td></tr>
+{% else %}<tr><td colspan="4" class="vazio">Nenhum usuário cadastrado.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}
