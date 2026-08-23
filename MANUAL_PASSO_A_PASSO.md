@@ -1,305 +1,384 @@
-# Manual completo — Trilha 2 da Vitrine Aurora
+# Manual completo — Trilha 3 da Vitrine Aurora
 
-Este manual foi escrito para quem está começando. Faça tudo na ordem e não pule etapas.
+Este manual foi escrito para uma pessoa iniciante. Faça as etapas na ordem e execute um comando de cada vez.
 
-## 1. O que mudou nesta trilha
+## 1. O que foi acrescentado nesta trilha
 
-Na Trilha 1, as páginas e rotas do projeto foram criadas com dados demonstrativos. Na Trilha 2, o projeto passou a possuir:
+A Trilha 3 completa o projeto com:
 
-- banco de dados SQLite;
-- cadastro de registros (Create);
-- listagem dos registros (Read);
-- edição dos registros (Update);
-- exclusão com confirmação (Delete);
-- relatórios calculados usando os registros do banco.
+- página de login;
+- criação de conta;
+- encerramento da sessão;
+- proteção das páginas internas;
+- senhas armazenadas com hash;
+- menu responsivo;
+- formulários, tabelas, alertas e botões do Bootstrap;
+- preparação para publicação no PythonAnywhere.
 
-Os CRUDs foram feitos para Usuário, Categoria, Anúncio, Pergunta, Compra e Favorito, que são as entidades definidas no MER.
+## 2. Páginas públicas e protegidas
 
-## 2. Baixar e descompactar a atualização
+Ficaram públicas somente as páginas que uma pessoa precisa ver antes de entrar:
 
-1. Baixe o arquivo `Entrega_Trilha2_Vitrine_Aurora_Anna.zip`.
-2. Abra a pasta **Downloads** do Windows.
-3. Clique com o botão direito sobre o arquivo ZIP.
-4. Clique em **Extrair Tudo**.
-5. Escolha um local fácil, como a Área de Trabalho.
-6. Clique em **Extrair**.
-7. Dentro da pasta extraída estará a pasta `Anna_Ecommerce_Flask`.
+- `/` — página inicial;
+- `/login` — entrada no sistema;
+- `/cadastro` — criação de conta.
 
-## 3. Manter a ligação com o GitHub da Trilha 1
+Exigem login:
 
-Como a atividade exige o mesmo repositório, o jeito mais simples é copiar os arquivos atualizados para dentro da pasta usada na Trilha 1:
+- `/usuarios` e suas operações;
+- `/categorias` e suas operações;
+- `/anuncios` e suas operações;
+- `/perguntas` e suas operações;
+- `/compras` e suas operações;
+- `/favoritos` e suas operações;
+- `/relatorios/compras`;
+- `/relatorios/vendas`;
+- `/logout`.
 
-1. Feche o servidor antigo pressionando `Ctrl + C` no terminal.
-2. Abra a nova pasta `Anna_Ecommerce_Flask` que foi extraída.
-3. Pressione `Ctrl + A` para selecionar os arquivos.
-4. Pressione `Ctrl + C` para copiar.
-5. Abra a pasta antiga do projeto que já foi enviada ao GitHub.
-6. Pressione `Ctrl + V`.
+Em cada rota protegida foi utilizado `@login_required`. Se uma pessoa tentar abrir uma dessas páginas sem login, o Flask-Login envia essa pessoa para `/login`.
+
+## 3. Copiar a atualização para a pasta ligada ao GitHub
+
+1. Baixe e extraia o ZIP da Trilha 3.
+2. Pare o servidor antigo com `Ctrl + C`.
+3. Abra a pasta extraída `Anna_Ecommerce_Flask`.
+4. Selecione os arquivos com `Ctrl + A` e copie com `Ctrl + C`.
+5. Abra a pasta antiga do projeto, a mesma que foi usada nas Trilhas 1 e 2.
+6. Cole com `Ctrl + V`.
 7. Quando o Windows perguntar, escolha **Substituir os arquivos no destino**.
 
-Não apague a pasta antiga antes de copiar. Ela contém a pasta oculta `.git`, responsável por manter a ligação com o repositório correto.
+Não apague a pasta antiga antes da cópia. A pasta oculta `.git` existente nela guarda a ligação com o repositório correto.
 
 ## 4. Abrir o projeto no VS Code
 
 1. Abra o Visual Studio Code.
 2. Clique em **File > Open Folder**.
-3. Selecione a pasta antiga `Anna_Ecommerce_Flask`, agora com os arquivos atualizados.
+3. Selecione a pasta antiga `Anna_Ecommerce_Flask`, agora atualizada.
 4. Clique em **Select Folder**.
-5. Se aparecer uma pergunta sobre confiar nos arquivos, confirme.
-6. No Explorer devem aparecer `app.py`, `requirements.txt`, `README.md`, `templates` e `static`.
+5. Clique em **Terminal > New Terminal**.
+6. Confira se o caminho do terminal termina em `Anna_Ecommerce_Flask`.
 
-## 5. Abrir o terminal
+## 5. Ativar o ambiente virtual
 
-1. No menu superior do VS Code, clique em **Terminal > New Terminal**.
-2. O terminal aparecerá na parte inferior.
-3. Confira se o caminho termina com `Anna_Ecommerce_Flask`.
-
-Se o terminal estiver em outra pasta, feche-o e abra novamente depois de abrir a pasta correta no VS Code.
-
-## 6. Ativar o ambiente virtual
-
-Se a pasta `.venv` já existe por causa da Trilha 1, ative-a no PowerShell:
+No PowerShell do VS Code:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-Se o PowerShell bloquear, clique na seta ao lado do botão `+` do terminal, selecione **Command Prompt** e use:
+Se a pasta `.venv` ainda não existir, crie-a primeiro:
+
+```powershell
+py -m venv .venv
+```
+
+Depois, execute novamente o comando de ativação. Quando funcionar, aparecerá `(.venv)` no começo da linha.
+
+Se o PowerShell bloquear a ativação, abra um terminal do tipo **Command Prompt** e use:
 
 ```cmd
 .venv\Scripts\activate.bat
 ```
 
-Se a pasta `.venv` não existir, crie primeiro:
+## 6. Instalar as dependências novas
 
-```bash
-python -m venv .venv
+Com `(.venv)` aparecendo no terminal, execute:
+
+```powershell
+py -m pip install -r requirements.txt
 ```
 
-Depois, use um dos comandos de ativação mostrados acima. Quando funcionar, aparecerá `(.venv)` no começo da linha do terminal.
+Além do Flask e do Flask-SQLAlchemy, será instalado o Flask-Login, responsável por controlar o usuário autenticado e a sessão.
 
-## 7. Instalar a nova dependência
+## 7. Executar no computador
 
-Mesmo que o Flask já esteja instalado, execute novamente:
+Digite:
 
-```bash
-python -m pip install -r requirements.txt
+```powershell
+py app.py
 ```
 
-Esse comando instalará o Flask e o Flask-SQLAlchemy. O SQLAlchemy é usado para trabalhar com o banco de dados.
-
-## 8. Executar o sistema
-
-No terminal, digite:
-
-```bash
-python app.py
-```
-
-Deve aparecer um endereço parecido com:
+Abra no Chrome:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-Segure `Ctrl` e clique no endereço ou copie e cole no Chrome. Esse endereço local é normal e pode ser igual ao da Trilha 1.
+Esse é o endereço local do computador. Ele pode ser igual ao endereço usado nas trilhas anteriores e não é o link público do PythonAnywhere.
 
-Na primeira execução, o arquivo `vitrine_aurora.db` será criado automaticamente. Ele guardará os registros cadastrados.
+## 8. Testar o login
 
-## 9. Testar o CRUD de usuários
-
-1. Clique em **Usuários** no menu.
-2. Confira se a lista aparece.
-3. Clique em **+ Novo usuário**.
-4. Preencha nome, e-mail e senha.
-5. Clique em **Salvar**.
-6. Confira se o novo usuário apareceu na lista.
-7. Clique em **Editar**, altere o nome e salve.
-8. Confira se o nome foi atualizado.
-9. Clique em **Excluir**.
-10. Confira a página de confirmação.
-11. Clique em **Sim, excluir** apenas se quiser remover o registro.
-
-Isso demonstra Create, Read, Update e Delete.
-
-## 10. Testar o CRUD de categorias
-
-1. Clique em **Categorias**.
-2. Clique em **+ Nova categoria**.
-3. Informe o nome e a descrição.
-4. Salve o cadastro.
-5. Use **Editar** para alterar a descrição.
-6. Use **Excluir** e confira a tela de confirmação.
-
-## 11. Testar o CRUD de anúncios
-
-Antes de criar um anúncio, deve existir pelo menos um usuário e uma categoria.
-
-1. Clique em **Anúncios**.
-2. Clique em **+ Novo anúncio**.
-3. Preencha título, descrição, preço e data.
-4. Selecione o anunciante.
-5. Selecione a categoria.
-6. Clique em **Salvar**.
-7. Teste os botões **Editar** e **Excluir**.
-
-## 12. Testar perguntas e respostas
-
-Antes deste teste, deve existir um usuário e um anúncio.
-
-1. Clique em **Perguntas**.
-2. Clique em **+ Nova pergunta**.
-3. Digite a pergunta e escolha o usuário e o anúncio.
-4. A resposta e a data da resposta podem ficar vazias no primeiro cadastro.
-5. Salve.
-6. Na lista, a pergunta aparecerá como **Pendente**.
-7. Clique em **Editar**.
-8. Digite a resposta do anunciante e informe a data.
-9. Salve novamente.
-10. A situação mudará para **Respondida**.
-11. O botão **Excluir** abre a confirmação antes da remoção.
-
-## 13. Testar o CRUD de compras
-
-1. Clique em **Compras**.
-2. Clique em **+ Nova compra**.
-3. Informe data, quantidade e valor total.
-4. Selecione o comprador e o anúncio.
-5. Clique em **Salvar**.
-6. Teste a edição do valor ou da quantidade.
-7. Teste a exclusão com confirmação.
-
-Não existe carrinho de compras porque o enunciado informa que a compra é feita diretamente em um anúncio.
-
-## 14. Testar o CRUD de favoritos
-
-1. Clique em **Favoritos**.
-2. Clique em **+ Novo favorito**.
-3. Selecione um usuário e um anúncio.
-4. Informe a data e salve.
-5. Teste **Editar** e **Excluir**.
-
-O mesmo anúncio não pode ser adicionado duas vezes aos favoritos do mesmo usuário. Essa regra evita registros repetidos.
-
-## 15. Conferir os relatórios
-
-1. Passe o mouse sobre **Relatórios** no menu.
-2. Clique em **Minhas compras**.
-3. Confira produto, comprador, data, valor e total.
-4. Volte ao menu **Relatórios**.
-5. Clique em **Minhas vendas**.
-6. Confira o vendedor de cada anúncio e o total.
-
-Os relatórios são atualizados automaticamente quando uma compra é cadastrada, editada ou excluída.
-
-## 16. Entender a estrutura
+Use o usuário de demonstração:
 
 ```text
-Anna_Ecommerce_Flask/
-|-- app.py
-|-- requirements.txt
-|-- README.md
-|-- MANUAL_PASSO_A_PASSO.md
-|-- vitrine_aurora.db              criado automaticamente
-|-- static/
-|   `-- style.css
-`-- templates/
-    |-- base.html
-    |-- index.html
-    |-- formulario.html
-    |-- confirmar_exclusao.html
-    |-- relatorio.html
-    |-- usuarios/lista.html
-    |-- categorias/lista.html
-    |-- anuncios/lista.html
-    |-- perguntas/lista.html
-    |-- compras/lista.html
-    `-- favoritos/lista.html
+E-mail: anna@email.com
+Senha: 123456
 ```
 
-- `app.py`: modelos do banco, rotas e operações CRUD.
-- `vitrine_aurora.db`: banco de dados SQLite.
-- `base.html`: menu e estrutura comum das páginas.
-- `formulario.html`: formulário usado para cadastrar e editar.
-- `confirmar_exclusao.html`: confirmação antes da exclusão.
-- pastas das entidades: tabelas de listagem.
-- `style.css`: cores e layout da Vitrine Aurora.
+1. Na página inicial, clique em **Entrar no sistema**.
+2. Digite o e-mail e a senha acima.
+3. Clique em **Entrar**.
+4. Confira se aparece a mensagem de boas-vindas.
+5. Confira se o menu passa a mostrar as áreas de usuários, categorias, anúncios, perguntas, favoritos, compras e relatórios.
 
-## 17. Como o CRUD aparece no código
+## 9. Testar uma senha incorreta
 
-- **Create:** rotas terminadas em `/novo` ou `/nova`, usando `db.session.add()`.
-- **Read:** rotas de listagem, como `/usuarios` e `/anuncios`, usando consultas ao banco.
-- **Update:** rotas terminadas em `/editar`, que carregam e alteram um registro existente.
-- **Delete:** rotas terminadas em `/excluir`, com confirmação e `db.session.delete()`.
-- `db.session.commit()` confirma e salva a alteração no SQLite.
+1. Clique em **Sair**.
+2. Informe `anna@email.com`.
+3. Digite uma senha diferente de `123456`.
+4. Clique em **Entrar**.
+5. O sistema deve informar que o e-mail ou a senha estão incorretos.
 
-## 18. Parar e abrir novamente
+## 10. Testar a proteção das páginas
 
-Para parar o sistema, volte ao terminal e pressione:
+1. Sem estar conectado, escreva no navegador:
 
 ```text
-Ctrl + C
+http://127.0.0.1:5000/anuncios
 ```
 
-Para abrir outra vez em outro dia:
+2. Pressione Enter.
+3. O sistema deve abrir a página de login e exibir o aviso para entrar.
+4. Faça o login.
+5. Abra novamente a página de anúncios.
+6. A lista deve aparecer normalmente.
 
-1. Abra a pasta no VS Code.
-2. Abra o terminal.
-3. Ative `.venv`.
-4. Execute `python app.py`.
-5. Abra `http://127.0.0.1:5000`.
+Repita com `/usuarios`, `/compras` ou `/relatorios/vendas` se quiser conferir outras áreas.
 
-## 19. Atualizar o mesmo repositório no GitHub
+## 11. Testar a criação de conta
 
-O repositório correto é:
+1. Saia do sistema.
+2. Clique em **Criar conta**.
+3. Informe um nome, um e-mail ainda não usado e uma senha com pelo menos seis caracteres.
+4. Clique em **Cadastrar**.
+5. Faça login com a conta criada.
+
+A senha é transformada em hash antes de ser gravada no banco. Isso evita deixar a senha original visível no arquivo SQLite.
+
+## 12. Conferir o Bootstrap
+
+1. Observe o menu superior, os botões, alertas, formulários e tabelas.
+2. Diminua a largura da janela do Chrome.
+3. Em uma tela menor, o menu deve virar um botão.
+4. Clique nesse botão e confira os links.
+5. Abra uma tabela em tela pequena. Ela deve permitir rolagem horizontal sem quebrar a página.
+
+O Bootstrap está salvo na pasta `static`, por isso o layout não depende de uma conexão externa para carregar.
+
+## 13. Atualizar o Git com o nome e o e-mail da Anna
+
+Antes do commit, execute:
+
+```powershell
+git config user.name "Anna Julia Torres Martins de Deus"
+git config user.email "anninhamt2605@gmail.com"
+git config --get user.name
+git config --get user.email
+```
+
+Os dois últimos comandos devem mostrar o nome e o e-mail da Anna. Essa configuração é feita somente neste projeto.
+
+## 14. Conferir e enviar ao GitHub
+
+O repositório continua sendo:
 
 ```text
 https://github.com/anninhamt2605-pixel/vitrine-aurora-flask.git
 ```
 
-Com o terminal dentro da pasta antiga do projeto, execute um comando por vez:
+Execute um comando por vez:
 
-```bash
+```powershell
 git status
 git add .
-git commit -m "Implementa CRUDs completos com banco de dados"
+git status
+git commit -m "Finaliza login, sessoes e interface Bootstrap"
 git push origin main
 ```
 
-O primeiro comando apenas mostra as mudanças. O segundo prepara os arquivos. O terceiro cria o histórico solicitado pela atividade. O quarto envia a atualização ao mesmo repositório.
+No segundo `git status`, os arquivos devem aparecer em verde. Depois do `git push`, abra o repositório no Chrome, pressione `Ctrl + F5` e confira o novo commit.
 
-Se aparecer `nothing to commit`, confirme se os arquivos novos foram realmente copiados para dentro da pasta antiga ligada ao GitHub.
+O endereço do repositório não muda quando o conteúdo é atualizado.
 
-Se aparecer erro 403 mencionando outra conta, faça login no GitHub com a conta `anninhamt2605-pixel` e tente novamente.
+## 15. Criar ou acessar a conta do PythonAnywhere
 
-## 20. Conferir o GitHub
+1. Abra `https://www.pythonanywhere.com`.
+2. Clique em **Sign up** para criar a conta ou **Log in** se já possuir uma.
+3. Escolha e anote o nome de usuário. Ele fará parte do endereço público.
+4. Entre no painel do PythonAnywhere.
 
-1. Abra https://github.com/anninhamt2605-pixel/vitrine-aurora-flask no Chrome.
-2. Atualize a página com `Ctrl + F5`.
-3. Confira se `app.py` mostra as classes do banco de dados.
-4. Confira se as novas pastas de templates aparecem.
-5. Confira se o commit **Implementa CRUDs completos com banco de dados** está visível.
-6. Confirme que o repositório continua como **Public**.
+Não envie a senha da conta por mensagem. Se alguma tela de login for necessária, faça essa parte diretamente no navegador.
 
-## 21. Justificativas usadas na atividade
+## 16. Clonar o repositório no PythonAnywhere
 
-- O SQLite foi escolhido porque é simples e suficiente para um projeto acadêmico, além de salvar os dados em um arquivo local.
-- O Flask-SQLAlchemy foi utilizado para representar as entidades do MER como classes e facilitar as operações no banco.
-- Cada entidade recebeu rotas de cadastro, listagem, edição e exclusão para cumprir o CRUD completo.
-- A confirmação de exclusão foi criada para evitar remoções acidentais.
-- Os formulários possuem campos obrigatórios e valores mínimos para diminuir erros de preenchimento.
-- Os relacionamentos do MER foram preservados por meio das chaves estrangeiras.
-- Os relatórios consultam as compras armazenadas, por isso refletem os dados reais do sistema.
+1. No painel, abra **Consoles**.
+2. Clique em **Bash**.
+3. No terminal preto, execute:
 
-## 22. Checklist antes de entregar
+```bash
+git clone https://github.com/anninhamt2605-pixel/vitrine-aurora-flask.git
+cd vitrine-aurora-flask
+ls
+```
 
-- [ ] O sistema abre com `python app.py`.
-- [ ] O banco `vitrine_aurora.db` foi criado.
-- [ ] As seis entidades possuem cadastro, lista, edição e exclusão.
-- [ ] Toda exclusão pede confirmação.
-- [ ] Os relatórios carregam sem erro.
-- [ ] O código foi enviado ao mesmo repositório da Trilha 1.
-- [ ] O novo commit aparece no histórico do GitHub.
-- [ ] O repositório está público.
-- [ ] O nome Anna Julia Torres Martins de Deus está correto no PDF.
-- [ ] O PDF da Trilha 2 foi anexado no AVA.
+O comando `ls` deve mostrar `app.py`, `requirements.txt`, `templates` e `static`.
+
+## 17. Criar o ambiente virtual no PythonAnywhere
+
+No mesmo terminal Bash, execute:
+
+```bash
+mkvirtualenv --python=/usr/bin/python3.13 vitrine-aurora
+cd ~/vitrine-aurora-flask
+pip install -r requirements.txt
+```
+
+Quando o ambiente estiver ativo, o começo da linha mostrará `(vitrine-aurora)`.
+
+Se abrir outro terminal em outro momento, reative com:
+
+```bash
+workon vitrine-aurora
+```
+
+## 18. Criar a aplicação Web
+
+1. Abra a guia **Web** no painel.
+2. Clique em **Add a new web app**.
+3. Avance na tela do domínio.
+4. Escolha **Manual configuration**.
+5. Escolha **Python 3.13**, a mesma versão usada no ambiente virtual.
+6. Aguarde a criação da aplicação.
+
+## 19. Informar a pasta e o ambiente virtual
+
+Na guia **Web**, localize a seção **Code** e informe:
+
+```text
+Source code: /home/SEU_USUARIO/vitrine-aurora-flask
+Working directory: /home/SEU_USUARIO/vitrine-aurora-flask
+```
+
+Troque `SEU_USUARIO` pelo nome da conta do PythonAnywhere.
+
+Na seção **Virtualenv**, informe:
+
+```text
+vitrine-aurora
+```
+
+Depois de confirmar, o painel deve mostrar o caminho completo do ambiente virtual.
+
+## 20. Configurar o arquivo WSGI
+
+1. Ainda na guia **Web**, clique no link do arquivo WSGI.
+2. Apague o exemplo que estiver no arquivo.
+3. Cole o conteúdo abaixo, trocando `SEU_USUARIO`:
+
+```python
+import os
+import sys
+
+path = "/home/SEU_USUARIO/vitrine-aurora-flask"
+if path not in sys.path:
+    sys.path.insert(0, path)
+
+os.environ["SECRET_KEY"] = "troque-por-uma-chave-diferente"
+
+from app import app as application
+```
+
+4. Clique em **Save**.
+
+O arquivo WSGI permite que o servidor do PythonAnywhere importe a variável `app` existente em `app.py`. O `app.run()` não é usado na hospedagem.
+
+## 21. Recarregar e abrir o sistema
+
+1. Volte para a guia **Web**.
+2. Clique no botão verde **Reload**.
+3. Aguarde alguns segundos.
+4. Clique no endereço mostrado no alto da página.
+
+Em uma conta gratuita do sistema americano, o formato normalmente será:
+
+```text
+https://SEU_USUARIO.pythonanywhere.com
+```
+
+Em uma conta do sistema europeu, poderá ser:
+
+```text
+https://SEU_USUARIO.eu.pythonanywhere.com
+```
+
+Use exatamente o endereço exibido na guia **Web**.
+
+## 22. Testar o sistema publicado
+
+No endereço público:
+
+1. confira a página inicial;
+2. faça login com `anna@email.com` e `123456`;
+3. abra anúncios, categorias e compras;
+4. abra os dois relatórios;
+5. clique em **Sair**;
+6. tente abrir `/anuncios` sem login e confirme o redirecionamento;
+7. diminua a janela para conferir o menu responsivo.
+
+Se ocorrer erro, abra a guia **Web** e consulte os links de **Error log** e **Server log**.
+
+## 23. Como atualizar o PythonAnywhere depois de outro commit
+
+Abra um Bash no PythonAnywhere e execute:
+
+```bash
+cd ~/vitrine-aurora-flask
+git pull origin main
+workon vitrine-aurora
+pip install -r requirements.txt
+```
+
+Depois, volte à guia **Web** e clique em **Reload**. Alterações no código precisam desse recarregamento.
+
+## 24. Justificativas para a atividade
+
+- A página inicial ficou pública para apresentar a plataforma; cadastros, alterações, exclusões e relatórios ficaram protegidos porque trabalham com informações internas.
+- O Flask-Login foi utilizado para identificar o usuário da sessão e aplicar `@login_required` nas rotas protegidas.
+- O logout encerra a sessão, evitando que outra pessoa continue usando o acesso no mesmo navegador.
+- As senhas são salvas com hash para não manter o texto original no banco de dados.
+- O Bootstrap foi aplicado ao menu, formulários, tabelas, alertas e botões para melhorar a organização e adaptar as páginas a computadores e celulares.
+- O SQLite foi mantido por ser suficiente para este projeto acadêmico e funcionar no computador e no PythonAnywhere.
+- O GitHub registra o histórico de commits e mantém o código-fonte público para avaliação.
+- O PythonAnywhere foi escolhido conforme o enunciado para deixar o sistema acessível por um endereço público.
+
+## 25. Checklist final
+
+- [ ] Login correto entra no sistema.
+- [ ] Login incorreto mostra mensagem.
+- [ ] Logout encerra a sessão.
+- [ ] Rotas internas redirecionam visitantes para o login.
+- [ ] Cadastro cria uma nova conta.
+- [ ] Menu funciona no computador e no celular.
+- [ ] Formulários e tabelas usam Bootstrap.
+- [ ] CRUDs e relatórios continuam funcionando.
+- [ ] Commit está no GitHub com nome e e-mail da Anna.
+- [ ] Repositório está público.
+- [ ] Sistema abre no endereço do PythonAnywhere.
+- [ ] Link público foi colocado no PDF.
+- [ ] PDF está com o nome Anna Julia Torres Martins de Deus.
+
+## 26. Links do trabalho
+
+Repositório:
+
+```text
+https://github.com/anninhamt2605-pixel/vitrine-aurora-flask.git
+```
+
+Sistema implantado:
+
+```text
+https://SEU_USUARIO.pythonanywhere.com
+```
+
+Substitua o último endereço pelo link real mostrado na guia **Web** antes de gerar o PDF final.

@@ -1,20 +1,22 @@
 {% extends "base.html" %}
 
-{% block conteudo %}
-<section class="cabecalho-pagina relatorio-head">
+{% block title %}{{ titulo }} | Vitrine Aurora{% endblock %}
+
+{% block content %}
+<section class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
     <div>
         <span class="etiqueta">Relatórios</span>
-        <h1>{{ titulo }}</h1>
-        <p>Resumo calculado a partir das compras cadastradas no banco de dados.</p>
+        <h1 class="display-6 fw-bold mt-3 mb-2">{{ titulo }}</h1>
+        <p class="text-secondary mb-0">Resumo calculado a partir das compras cadastradas no banco de dados.</p>
     </div>
-    <div class="total">
+    <div class="total-card">
         <span>Total</span>
         <strong>{{ total|moeda }}</strong>
     </div>
 </section>
 
-<div class="tabela-wrap">
-    <table>
+<div class="table-responsive table-card shadow-sm">
+    <table class="table table-hover align-middle mb-0">
         <thead>
             <tr><th>Produto</th><th>{{ pessoa_label }}</th><th>Data</th><th>Valor</th></tr>
         </thead>
@@ -24,10 +26,10 @@
                 <td>{{ registro.anuncio.titulo }}</td>
                 <td>{{ registro.comprador.nome if tipo == 'compras' else registro.anuncio.usuario.nome }}</td>
                 <td>{{ registro.data_compra|data_br }}</td>
-                <td>{{ registro.valor_total|moeda }}</td>
+                <td class="fw-semibold">{{ registro.valor_total|moeda }}</td>
             </tr>
             {% else %}
-            <tr><td colspan="4" class="vazio">Nenhuma movimentação cadastrada.</td></tr>
+            <tr><td colspan="4" class="text-center text-secondary py-5">Nenhuma movimentação cadastrada.</td></tr>
             {% endfor %}
         </tbody>
     </table>

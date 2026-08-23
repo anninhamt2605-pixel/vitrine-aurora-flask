@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Criar conta | Vitrine Aurora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-lg-4">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card auth-card border-0 shadow-sm">
+            <div class="card-body p-4 p-lg-5">
+                <span class="etiqueta">Novo usuário</span>
+                <h1 class="h3 mt-3 mb-2">Criar uma conta</h1>
+                <p class="text-secondary mb-4">O cadastro permite entrar nas áreas protegidas da plataforma.</p>
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label" for="nome">Nome completo</label>
+                        <input class="form-control" type="text" id="nome" name="nome" required placeholder="Digite seu nome">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="email">E-mail</label>
+                        <input class="form-control" type="email" id="email" name="email" required placeholder="nome@email.com">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label" for="senha">Senha</label>
+                        <input class="form-control" type="password" id="senha" name="senha" minlength="6" required placeholder="Use pelo menos 6 caracteres">
+                    </div>
+                    <button class="btn btn-aurora w-100" type="submit">Cadastrar</button>
+                </form>
+
+                <p class="text-center text-secondary mt-4 mb-0">
+                    Já possui uma conta?
+                    <a class="link-aurora" href="{{ url_for('login') }}">Entrar</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block conteudo %}
-<section class="cabecalho-pagina cabecalho-com-acao">
+{% block title %}Categorias | Vitrine Aurora{% endblock %}
+{% block content %}
+<section class="cabecalho-lista">
     <div><span class="etiqueta">CRUD de categorias</span><h1>Categorias</h1><p>Organize os anúncios por assunto.</p></div>
-    <a class="botao primario" href="{{ url_for('categoria_nova') }}">+ Nova categoria</a>
+    <a class="btn btn-aurora" href="{{ url_for('categoria_nova') }}">+ Nova categoria</a>
 </section>
-<div class="tabela-wrap"><table><thead><tr><th>ID</th><th>Nome</th><th>Descrição</th><th>Ações</th></tr></thead><tbody>
-{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td>{{ registro.nome }}</td><td>{{ registro.descricao }}</td><td class="acoes-tabela"><a class="acao editar" href="{{ url_for('categoria_editar', id=registro.id) }}">Editar</a><a class="acao excluir" href="{{ url_for('categoria_excluir', id=registro.id) }}">Excluir</a></td></tr>
-{% else %}<tr><td colspan="4" class="vazio">Nenhuma categoria cadastrada.</td></tr>{% endfor %}
+<div class="table-responsive table-card shadow-sm"><table class="table table-hover align-middle mb-0"><thead><tr><th>ID</th><th>Nome</th><th>Descrição</th><th>Ações</th></tr></thead><tbody>
+{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td class="fw-semibold">{{ registro.nome }}</td><td>{{ registro.descricao }}</td><td><div class="d-flex gap-2"><a class="btn btn-sm btn-outline-aurora" href="{{ url_for('categoria_editar', id=registro.id) }}">Editar</a><a class="btn btn-sm btn-outline-danger" href="{{ url_for('categoria_excluir', id=registro.id) }}">Excluir</a></div></td></tr>
+{% else %}<tr><td colspan="4" class="text-center text-secondary py-5">Nenhuma categoria cadastrada.</td></tr>{% endfor %}
 </tbody></table></div>
 {% endblock %}

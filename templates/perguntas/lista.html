@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block conteudo %}
-<section class="cabecalho-pagina cabecalho-com-acao">
+{% block title %}Perguntas | Vitrine Aurora{% endblock %}
+{% block content %}
+<section class="cabecalho-lista">
     <div><span class="etiqueta">CRUD de perguntas</span><h1>Perguntas e respostas</h1><p>Registre dúvidas e respostas dos anunciantes.</p></div>
-    <a class="botao primario" href="{{ url_for('pergunta_nova') }}">+ Nova pergunta</a>
+    <a class="btn btn-aurora" href="{{ url_for('pergunta_nova') }}">+ Nova pergunta</a>
 </section>
-<div class="tabela-wrap"><table><thead><tr><th>ID</th><th>Pergunta</th><th>Usuário</th><th>Anúncio</th><th>Resposta</th><th>Ações</th></tr></thead><tbody>
-{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td>{{ registro.texto }}<small>{{ registro.data_pergunta|data_br }}</small></td><td>{{ registro.usuario.nome }}</td><td>{{ registro.anuncio.titulo }}</td><td>{% if registro.resposta %}<span class="status respondida">Respondida</span><small>{{ registro.resposta }}</small>{% else %}<span class="status pendente">Pendente</span>{% endif %}</td><td class="acoes-tabela"><a class="acao editar" href="{{ url_for('pergunta_editar', id=registro.id) }}">Editar</a><a class="acao excluir" href="{{ url_for('pergunta_excluir', id=registro.id) }}">Excluir</a></td></tr>
-{% else %}<tr><td colspan="6" class="vazio">Nenhuma pergunta cadastrada.</td></tr>{% endfor %}
+<div class="table-responsive table-card shadow-sm"><table class="table table-hover align-middle mb-0"><thead><tr><th>ID</th><th>Pergunta</th><th>Usuário</th><th>Anúncio</th><th>Resposta</th><th>Ações</th></tr></thead><tbody>
+{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td>{{ registro.texto }}<small>{{ registro.data_pergunta|data_br }}</small></td><td>{{ registro.usuario.nome }}</td><td>{{ registro.anuncio.titulo }}</td><td>{% if registro.resposta %}<span class="badge text-bg-success">Respondida</span><small>{{ registro.resposta }}</small>{% else %}<span class="badge text-bg-warning">Pendente</span>{% endif %}</td><td><div class="d-flex gap-2"><a class="btn btn-sm btn-outline-aurora" href="{{ url_for('pergunta_editar', id=registro.id) }}">Editar</a><a class="btn btn-sm btn-outline-danger" href="{{ url_for('pergunta_excluir', id=registro.id) }}">Excluir</a></div></td></tr>
+{% else %}<tr><td colspan="6" class="text-center text-secondary py-5">Nenhuma pergunta cadastrada.</td></tr>{% endfor %}
 </tbody></table></div>
 {% endblock %}

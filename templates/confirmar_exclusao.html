@@ -1,14 +1,22 @@
 {% extends "base.html" %}
 
-{% block conteudo %}
-<section class="confirmacao">
-    <div class="confirmacao-icone">!</div>
-    <span class="etiqueta">Confirmação necessária</span>
-    <h1>{{ titulo }}</h1>
-    <p>Você realmente deseja excluir <strong>{{ registro }}</strong>? Esta ação não poderá ser desfeita.</p>
-    <form method="post" class="acoes-formulario">
-        <button class="botao perigo" type="submit">Sim, excluir</button>
-        <a class="botao secundario" href="{{ url_for(voltar) }}">Cancelar</a>
-    </form>
-</section>
+{% block title %}Confirmar exclusão | Vitrine Aurora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-lg-5">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card confirm-card border-0 shadow-sm text-center">
+            <div class="card-body p-4 p-lg-5">
+                <div class="confirmacao-icone mx-auto mb-3">!</div>
+                <span class="etiqueta">Confirmação necessária</span>
+                <h1 class="h2 mt-3">{{ titulo }}</h1>
+                <p class="text-secondary mt-3">Você realmente deseja excluir <strong>{{ registro }}</strong>? Esta ação não poderá ser desfeita.</p>
+                <form method="post" class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+                    <button class="btn btn-danger" type="submit">Sim, excluir</button>
+                    <a class="btn btn-light" href="{{ url_for(voltar) }}">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

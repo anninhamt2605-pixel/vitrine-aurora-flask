@@ -1,42 +1,75 @@
 {% extends "base.html" %}
 
-{% block conteudo %}
-<section class="hero">
-    <div>
-        <span class="etiqueta">E-commerce acadêmico</span>
-        <h1>Um jeito simples de anunciar, comprar e organizar favoritos.</h1>
-        <p>Projeto desenvolvido com Flask, banco de dados SQLite e operações completas de cadastro, consulta, edição e exclusão.</p>
-        <div class="acoes">
-            <a class="botao primario" href="{{ url_for('anuncios') }}">Gerenciar anúncios</a>
-            <a class="botao secundario" href="{{ url_for('favoritos') }}">Ver favoritos</a>
+{% block title %}Início | Vitrine Aurora{% endblock %}
+
+{% block content %}
+<section class="hero-aurora shadow-sm mb-4 mb-lg-5">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="etiqueta etiqueta-clara">E-commerce acadêmico</span>
+            <h1 class="display-5 fw-bold mt-3">Uma vitrine simples para anunciar, comprar e organizar produtos.</h1>
+            <p class="lead mt-3 mb-4">O projeto reúne os cadastros e relatórios da plataforma em uma interface protegida por login.</p>
+            {% if current_user.is_authenticated %}
+                <a class="btn btn-claro btn-lg" href="{{ url_for('anuncios') }}">Ver anúncios</a>
+                <a class="btn btn-outline-light btn-lg ms-sm-2 mt-2 mt-sm-0" href="{{ url_for('relatorio_vendas') }}">Abrir relatórios</a>
+            {% else %}
+                <a class="btn btn-claro btn-lg" href="{{ url_for('login') }}">Entrar no sistema</a>
+                <a class="btn btn-outline-light btn-lg ms-sm-2 mt-2 mt-sm-0" href="{{ url_for('cadastro') }}">Criar conta</a>
+            {% endif %}
         </div>
-    </div>
-    <div class="hero-card">
-        <span class="circulo um"></span>
-        <span class="circulo dois"></span>
-        <div class="mini-card">
-            <span>Novidade</span>
-            <strong>Vitrine Aurora</strong>
-            <small>Compras diretas, sem carrinho.</small>
+        <div class="col-lg-5">
+            <div class="hero-card">
+                <div class="bolha bolha-1"></div>
+                <div class="bolha bolha-2"></div>
+                <div class="mini-card mini-card-1">
+                    <strong>Anúncios</strong>
+                    <span>produtos por categoria</span>
+                </div>
+                <div class="mini-card mini-card-2">
+                    <strong>Compras</strong>
+                    <span>registros sem carrinho</span>
+                </div>
+                <div class="mini-card mini-card-3">
+                    <strong>Favoritos</strong>
+                    <span>itens salvos pelo usuário</span>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="secao">
-    <div class="secao-titulo">
+<section>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-2 mb-3">
         <div>
-            <span class="etiqueta">Visao geral</span>
-            <h2>Painel da plataforma</h2>
+            <span class="etiqueta">Visão geral</span>
+            <h2 class="h3 mt-2 mb-0">Dados cadastrados</h2>
         </div>
-        <a href="{{ url_for('relatorio_vendas') }}">Consultar vendas -></a>
+        {% if not current_user.is_authenticated %}
+            <small class="text-secondary">Entre para consultar e alterar os registros.</small>
+        {% endif %}
     </div>
-    <div class="metricas">
-        {% for destaque in destaques %}
-        <article class="metrica {{ destaque.cor }}">
-            <span>{{ destaque.titulo }}</span>
-            <strong>{{ destaque.valor }}</strong>
-        </article>
-        {% endfor %}
+
+    <div class="row g-3">
+        <div class="col-6 col-lg-3">
+            <div class="card metrica-card metrica-violeta border-0 h-100">
+                <div class="card-body"><span>Usuários</span><strong>{{ totais.usuarios }}</strong></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card metrica-card metrica-menta border-0 h-100">
+                <div class="card-body"><span>Anúncios</span><strong>{{ totais.anuncios }}</strong></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card metrica-card metrica-laranja border-0 h-100">
+                <div class="card-body"><span>Compras</span><strong>{{ totais.compras }}</strong></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card metrica-card metrica-azul border-0 h-100">
+                <div class="card-body"><span>Favoritos</span><strong>{{ totais.favoritos }}</strong></div>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock %}

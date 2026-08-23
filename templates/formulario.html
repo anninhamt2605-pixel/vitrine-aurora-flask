@@ -1,37 +1,45 @@
 {% extends "base.html" %}
 
-{% block conteudo %}
-<section class="cabecalho-pagina cabecalho-compacto">
+{% block title %}{{ titulo }} | Vitrine Aurora{% endblock %}
+
+{% block content %}
+<section class="mb-4">
     <span class="etiqueta">Formulário</span>
-    <h1>{{ titulo }}</h1>
-    <p>Preencha os campos abaixo e salve o registro.</p>
+    <h1 class="display-6 fw-bold mt-3 mb-2">{{ titulo }}</h1>
+    <p class="text-secondary">Preencha os campos abaixo e salve o registro.</p>
 </section>
 
-<form method="post" class="formulario">
-    {% for campo in campos %}
-    <div class="grupo-campo">
-        <label for="{{ campo.name }}">{{ campo.label }}</label>
+<div class="card form-card border-0 shadow-sm">
+    <div class="card-body p-4 p-lg-5">
+        <form method="post">
+            <div class="row g-3">
+                {% for campo in campos %}
+                <div class="{% if campo.type == 'textarea' %}col-12{% else %}col-12 col-md-6{% endif %}">
+                    <label class="form-label fw-semibold" for="{{ campo.name }}">{{ campo.label }}</label>
 
-        {% if campo.type == 'textarea' %}
-            <textarea id="{{ campo.name }}" name="{{ campo.name }}" {% if campo.required %}required{% endif %}>{{ campo.value }}</textarea>
-        {% elif campo.type == 'select' %}
-            <select id="{{ campo.name }}" name="{{ campo.name }}" {% if campo.required %}required{% endif %}>
-                <option value="">Selecione uma opção</option>
-                {% for valor, texto in campo.options %}
-                    <option value="{{ valor }}" {% if valor|string == campo.value|string %}selected{% endif %}>{{ texto }}</option>
+                    {% if campo.type == 'textarea' %}
+                        <textarea class="form-control" id="{{ campo.name }}" name="{{ campo.name }}" rows="4" {% if campo.required %}required{% endif %}>{{ campo.value }}</textarea>
+                    {% elif campo.type == 'select' %}
+                        <select class="form-select" id="{{ campo.name }}" name="{{ campo.name }}" {% if campo.required %}required{% endif %}>
+                            <option value="">Selecione uma opção</option>
+                            {% for valor, texto in campo.options %}
+                                <option value="{{ valor }}" {% if valor|string == campo.value|string %}selected{% endif %}>{{ texto }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <input class="form-control" id="{{ campo.name }}" name="{{ campo.name }}" type="{{ campo.type }}"
+                               value="{{ campo.value }}" {% if campo.step %}step="{{ campo.step }}"{% endif %}
+                               {% if campo.min %}min="{{ campo.min }}"{% endif %} {% if campo.required %}required{% endif %}>
+                    {% endif %}
+                </div>
                 {% endfor %}
-            </select>
-        {% else %}
-            <input id="{{ campo.name }}" name="{{ campo.name }}" type="{{ campo.type }}"
-                   value="{{ campo.value }}" {% if campo.step %}step="{{ campo.step }}"{% endif %}
-                   {% if campo.min %}min="{{ campo.min }}"{% endif %} {% if campo.required %}required{% endif %}>
-        {% endif %}
-    </div>
-    {% endfor %}
+            </div>
 
-    <div class="acoes-formulario">
-        <button class="botao primario" type="submit">Salvar</button>
-        <a class="botao secundario" href="{{ url_for(voltar) }}">Cancelar</a>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <button class="btn btn-aurora" type="submit">Salvar</button>
+                <a class="btn btn-light" href="{{ url_for(voltar) }}">Cancelar</a>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 {% endblock %}

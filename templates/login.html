@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Entrar | Vitrine Aurora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-lg-4">
+    <div class="col-12 col-md-8 col-lg-5">
+        <div class="card auth-card border-0 shadow-sm">
+            <div class="card-body p-4 p-lg-5">
+                <span class="etiqueta">Área protegida</span>
+                <h1 class="h3 mt-3 mb-2">Entrar no sistema</h1>
+                <p class="text-secondary mb-4">Informe seus dados para acessar os cadastros e relatórios.</p>
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label" for="email">E-mail</label>
+                        <input class="form-control" type="email" id="email" name="email" required autofocus placeholder="nome@email.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="senha">Senha</label>
+                        <input class="form-control" type="password" id="senha" name="senha" required placeholder="Digite sua senha">
+                    </div>
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="lembrar" name="lembrar">
+                        <label class="form-check-label" for="lembrar">Manter conectado neste navegador</label>
+                    </div>
+                    <button class="btn btn-aurora w-100" type="submit">Entrar</button>
+                </form>
+
+                <p class="text-center text-secondary mt-4 mb-0">
+                    Ainda não possui acesso?
+                    <a class="link-aurora" href="{{ url_for('cadastro') }}">Criar conta</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

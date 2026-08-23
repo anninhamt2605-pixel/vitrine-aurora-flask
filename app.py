@@ -1,21 +1,30 @@
+import os
 from datetime import date, datetime
 from pathlib import Path
 
 from flask import Flask, flash, redirect, render_template, request, url_for
+from flask_login import LoginManager, UserMixin, current_user, login_required, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 BASE_DIR = Path(__file__).resolve().parent
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "vitrine-aurora-chave-academica"
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{BASE_DIR / 'vitrine_aurora.db'}"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "vitrine-aurora-chave-academica")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "DATABASE_URL", f"sqlite:///{BASE_DIR / 'vitrine_aurora.db'}"
+)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+login_manager.login_message = "Faça login para acessar esta página."
+login_manager.login_message_category = "aviso"
 
 
 @event.listens_for(Engine, "connect")
@@ -25,18 +34,29 @@ def ativar_chaves_estrangeiras(conexao, _):
     cursor.close()
 
 
-class Usuario(db.Model):
+class Usuario(UserMixin, db.Model):
     __tablename__ = "usuarios"
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
-    senha = db.Column(db.String(100), nullable=False)
+    senha = db.Column(db.String(255), nullable=False)
 
     anuncios = db.relationship("Anuncio", back_populates="usuario", cascade="all, delete-orphan")
     perguntas = db.relationship("Pergunta", back_populates="usuario", cascade="all, delete-orphan")
     compras = db.relationship("Compra", back_populates="comprador", cascade="all, delete-orphan")
     favoritos = db.relationship("Favorito", back_populates="usuario", cascade="all, delete-orphan")
+
+    def definir_senha(self, senha):
+        self.senha = generate_password_hash(senha)
+
+    def verificar_senha(self, senha):
+        return check_password_hash(self.senha, senha)
+
+
+@login_manager.user_loader
+def carregar_usuario(usuario_id):
+    return db.session.get(Usuario, int(usuario_id))
 
 
 class Categoria(db.Model):
@@ -140,7 +160,7 @@ def campos_usuario(usuario=None):
     return [
         {"name": "nome", "label": "Nome completo", "type": "text", "value": usuario.nome if usuario else "", "required": True},
         {"name": "email", "label": "E-mail", "type": "email", "value": usuario.email if usuario else "", "required": True},
-        {"name": "senha", "label": "Senha", "type": "password", "value": usuario.senha if usuario else "", "required": True},
+        {"name": "senha", "label": "Senha" if not usuario else "Nova senha (deixe em branco para manter)", "type": "password", "value": "", "required": not usuario},
     ]
 
 
@@ -203,42 +223,97 @@ def formatar_data(valor):
 
 @app.route("/")
 def inicio():
-    destaques = [
-        {"titulo": "Anúncios cadastrados", "valor": Anuncio.query.count(), "cor": "violeta"},
-        {"titulo": "Categorias", "valor": Categoria.query.count(), "cor": "menta"},
-        {"titulo": "Perguntas", "valor": Pergunta.query.count(), "cor": "laranja"},
-    ]
-    return render_template("index.html", destaques=destaques)
+    totais = {
+        "usuarios": Usuario.query.count(),
+        "anuncios": Anuncio.query.count(),
+        "compras": Compra.query.count(),
+        "favoritos": Favorito.query.count(),
+    }
+    return render_template("index.html", totais=totais)
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("inicio"))
+
+    if request.method == "POST":
+        email = request.form["email"].strip().lower()
+        usuario = Usuario.query.filter_by(email=email).first()
+        if usuario and usuario.verificar_senha(request.form["senha"]):
+            login_user(usuario, remember="lembrar" in request.form)
+            flash(f"Bem-vinda, {usuario.nome}!", "sucesso")
+            return redirect(url_for("inicio"))
+        flash("E-mail ou senha incorretos.", "erro")
+
+    return render_template("login.html", titulo="Entrar")
+
+
+@app.route("/cadastro", methods=["GET", "POST"])
+def cadastro():
+    if current_user.is_authenticated:
+        return redirect(url_for("inicio"))
+
+    if request.method == "POST":
+        email = request.form["email"].strip().lower()
+        if Usuario.query.filter_by(email=email).first():
+            flash("Este e-mail já está cadastrado.", "erro")
+        else:
+            usuario = Usuario(nome=request.form["nome"].strip(), email=email)
+            usuario.definir_senha(request.form["senha"])
+            db.session.add(usuario)
+            if salvar_alteracao("Conta criada com sucesso! Agora faça o login."):
+                return redirect(url_for("login"))
+    return render_template("cadastro.html", titulo="Criar conta")
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("Sessão encerrada com segurança.", "sucesso")
+    return redirect(url_for("login"))
 
 
 # CRUD DE USUÁRIOS
 @app.route("/usuarios")
+@login_required
 def usuarios():
     return render_template("usuarios/lista.html", registros=Usuario.query.order_by(Usuario.id).all())
 
 
 @app.route("/usuarios/novo", methods=["GET", "POST"])
+@login_required
 def usuario_novo():
     if request.method == "POST":
-        db.session.add(Usuario(nome=request.form["nome"], email=request.form["email"], senha=request.form["senha"]))
+        usuario = Usuario(nome=request.form["nome"], email=request.form["email"].strip().lower())
+        usuario.definir_senha(request.form["senha"])
+        db.session.add(usuario)
         if salvar_alteracao("Usuário cadastrado com sucesso!"):
             return redirect(url_for("usuarios"))
     return render_template("formulario.html", titulo="Cadastrar usuário", campos=campos_usuario(), voltar="usuarios")
 
 
 @app.route("/usuarios/<int:id>/editar", methods=["GET", "POST"])
+@login_required
 def usuario_editar(id):
     usuario = db.get_or_404(Usuario, id)
     if request.method == "POST":
-        usuario.nome, usuario.email, usuario.senha = request.form["nome"], request.form["email"], request.form["senha"]
+        usuario.nome, usuario.email = request.form["nome"], request.form["email"].strip().lower()
+        if request.form["senha"]:
+            usuario.definir_senha(request.form["senha"])
         if salvar_alteracao("Usuário atualizado com sucesso!"):
             return redirect(url_for("usuarios"))
     return render_template("formulario.html", titulo="Editar usuário", campos=campos_usuario(usuario), voltar="usuarios")
 
 
 @app.route("/usuarios/<int:id>/excluir", methods=["GET", "POST"])
+@login_required
 def usuario_excluir(id):
     usuario = db.get_or_404(Usuario, id)
+    if usuario.id == current_user.id:
+        flash("Você não pode excluir o usuário que está com a sessão aberta.", "erro")
+        return redirect(url_for("usuarios"))
     if request.method == "POST":
         db.session.delete(usuario)
         salvar_alteracao("Usuário excluído com sucesso!")
@@ -248,11 +323,13 @@ def usuario_excluir(id):
 
 # CRUD DE CATEGORIAS
 @app.route("/categorias")
+@login_required
 def categorias():
     return render_template("categorias/lista.html", registros=Categoria.query.order_by(Categoria.id).all())
 
 
 @app.route("/categorias/nova", methods=["GET", "POST"])
+@login_required
 def categoria_nova():
     if request.method == "POST":
         db.session.add(Categoria(nome=request.form["nome"], descricao=request.form["descricao"]))
@@ -262,6 +339,7 @@ def categoria_nova():
 
 
 @app.route("/categorias/<int:id>/editar", methods=["GET", "POST"])
+@login_required
 def categoria_editar(id):
     categoria = db.get_or_404(Categoria, id)
     if request.method == "POST":
@@ -272,6 +350,7 @@ def categoria_editar(id):
 
 
 @app.route("/categorias/<int:id>/excluir", methods=["GET", "POST"])
+@login_required
 def categoria_excluir(id):
     categoria = db.get_or_404(Categoria, id)
     if request.method == "POST":
@@ -283,11 +362,13 @@ def categoria_excluir(id):
 
 # CRUD DE ANÚNCIOS
 @app.route("/anuncios")
+@login_required
 def anuncios():
     return render_template("anuncios/lista.html", registros=Anuncio.query.order_by(Anuncio.id).all())
 
 
 @app.route("/anuncios/novo", methods=["GET", "POST"])
+@login_required
 def anuncio_novo():
     if request.method == "POST":
         anuncio = Anuncio(titulo=request.form["titulo"], descricao=request.form["descricao"], preco=float(request.form["preco"]), data_publicacao=data_do_formulario("data_publicacao"), usuario_id=int(request.form["usuario_id"]), categoria_id=int(request.form["categoria_id"]))
@@ -298,6 +379,7 @@ def anuncio_novo():
 
 
 @app.route("/anuncios/<int:id>/editar", methods=["GET", "POST"])
+@login_required
 def anuncio_editar(id):
     anuncio = db.get_or_404(Anuncio, id)
     if request.method == "POST":
@@ -310,6 +392,7 @@ def anuncio_editar(id):
 
 
 @app.route("/anuncios/<int:id>/excluir", methods=["GET", "POST"])
+@login_required
 def anuncio_excluir(id):
     anuncio = db.get_or_404(Anuncio, id)
     if request.method == "POST":
@@ -321,11 +404,13 @@ def anuncio_excluir(id):
 
 # CRUD DE PERGUNTAS E RESPOSTAS
 @app.route("/perguntas")
+@login_required
 def perguntas():
     return render_template("perguntas/lista.html", registros=Pergunta.query.order_by(Pergunta.id).all())
 
 
 @app.route("/perguntas/nova", methods=["GET", "POST"])
+@login_required
 def pergunta_nova():
     if request.method == "POST":
         pergunta = Pergunta(texto=request.form["texto"], data_pergunta=data_do_formulario("data_pergunta"), resposta=request.form["resposta"] or None, data_resposta=data_do_formulario("data_resposta") if request.form["data_resposta"] else None, usuario_id=int(request.form["usuario_id"]), anuncio_id=int(request.form["anuncio_id"]))
@@ -336,6 +421,7 @@ def pergunta_nova():
 
 
 @app.route("/perguntas/<int:id>/editar", methods=["GET", "POST"])
+@login_required
 def pergunta_editar(id):
     pergunta = db.get_or_404(Pergunta, id)
     if request.method == "POST":
@@ -349,6 +435,7 @@ def pergunta_editar(id):
 
 
 @app.route("/perguntas/<int:id>/excluir", methods=["GET", "POST"])
+@login_required
 def pergunta_excluir(id):
     pergunta = db.get_or_404(Pergunta, id)
     if request.method == "POST":
@@ -360,11 +447,13 @@ def pergunta_excluir(id):
 
 # CRUD DE COMPRAS
 @app.route("/compras")
+@login_required
 def compras():
     return render_template("compras/lista.html", registros=Compra.query.order_by(Compra.id).all())
 
 
 @app.route("/compras/nova", methods=["GET", "POST"])
+@login_required
 def compra_nova():
     if request.method == "POST":
         compra = Compra(data_compra=data_do_formulario("data_compra"), quantidade=int(request.form["quantidade"]), valor_total=float(request.form["valor_total"]), comprador_id=int(request.form["comprador_id"]), anuncio_id=int(request.form["anuncio_id"]))
@@ -375,6 +464,7 @@ def compra_nova():
 
 
 @app.route("/compras/<int:id>/editar", methods=["GET", "POST"])
+@login_required
 def compra_editar(id):
     compra = db.get_or_404(Compra, id)
     if request.method == "POST":
@@ -387,6 +477,7 @@ def compra_editar(id):
 
 
 @app.route("/compras/<int:id>/excluir", methods=["GET", "POST"])
+@login_required
 def compra_excluir(id):
     compra = db.get_or_404(Compra, id)
     if request.method == "POST":
@@ -398,11 +489,13 @@ def compra_excluir(id):
 
 # CRUD DE FAVORITOS
 @app.route("/favoritos")
+@login_required
 def favoritos():
     return render_template("favoritos/lista.html", registros=Favorito.query.order_by(Favorito.id).all())
 
 
 @app.route("/favoritos/novo", methods=["GET", "POST"])
+@login_required
 def favorito_novo():
     if request.method == "POST":
         favorito = Favorito(data_adicao=data_do_formulario("data_adicao"), usuario_id=int(request.form["usuario_id"]), anuncio_id=int(request.form["anuncio_id"]))
@@ -413,6 +506,7 @@ def favorito_novo():
 
 
 @app.route("/favoritos/<int:id>/editar", methods=["GET", "POST"])
+@login_required
 def favorito_editar(id):
     favorito = db.get_or_404(Favorito, id)
     if request.method == "POST":
@@ -424,6 +518,7 @@ def favorito_editar(id):
 
 
 @app.route("/favoritos/<int:id>/excluir", methods=["GET", "POST"])
+@login_required
 def favorito_excluir(id):
     favorito = db.get_or_404(Favorito, id)
     if request.method == "POST":
@@ -434,12 +529,14 @@ def favorito_excluir(id):
 
 
 @app.route("/relatorios/compras")
+@login_required
 def relatorio_compras():
     registros = Compra.query.order_by(Compra.data_compra.desc()).all()
     return render_template("relatorio.html", titulo="Relatório de compras", pessoa_label="Comprador", registros=registros, total=sum(item.valor_total for item in registros), tipo="compras")
 
 
 @app.route("/relatorios/vendas")
+@login_required
 def relatorio_vendas():
     registros = Compra.query.order_by(Compra.data_compra.desc()).all()
     return render_template("relatorio.html", titulo="Relatório de vendas", pessoa_label="Vendedor", registros=registros, total=sum(item.valor_total for item in registros), tipo="vendas")
@@ -449,9 +546,11 @@ def criar_dados_iniciais():
     if Usuario.query.count() > 0:
         return
 
-    anna = Usuario(nome="Anna Julia Torres Martins de Deus", email="anna@email.com", senha="123456")
-    marina = Usuario(nome="Marina Costa", email="marina@email.com", senha="123456")
-    lucas = Usuario(nome="Lucas Lima", email="lucas@email.com", senha="123456")
+    anna = Usuario(nome="Anna Julia Torres Martins de Deus", email="anna@email.com")
+    marina = Usuario(nome="Marina Costa", email="marina@email.com")
+    lucas = Usuario(nome="Lucas Lima", email="lucas@email.com")
+    for usuario in (anna, marina, lucas):
+        usuario.definir_senha("123456")
     eletronicos = Categoria(nome="Eletrônicos", descricao="Celulares, notebooks e acessórios")
     casa = Categoria(nome="Casa e decoração", descricao="Itens para todos os ambientes")
     livros = Categoria(nome="Livros", descricao="Livros novos e usados")
@@ -473,10 +572,22 @@ def criar_dados_iniciais():
     db.session.commit()
 
 
+def proteger_senhas_antigas():
+    """Converte as senhas da Trilha 2 para hashes sem apagar o banco existente."""
+    alterou = False
+    for usuario in Usuario.query.all():
+        if not usuario.senha.startswith(("scrypt:", "pbkdf2:")):
+            usuario.definir_senha(usuario.senha)
+            alterou = True
+    if alterou:
+        db.session.commit()
+
+
 with app.app_context():
     db.create_all()
     criar_dados_iniciais()
+    proteger_senhas_antigas()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=os.environ.get("FLASK_DEBUG") == "1")

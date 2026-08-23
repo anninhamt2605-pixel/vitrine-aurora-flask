@@ -1,41 +1,62 @@
-# Vitrine Aurora — Trilha 2
+# Vitrine Aurora — Trilha 3
 
-Continuação do projeto acadêmico de e-commerce desenvolvido em Flask por **Anna Julia Torres Martins de Deus**.
+Projeto acadêmico de e-commerce desenvolvido em Flask por **Anna Julia Torres Martins de Deus**.
 
-Nesta etapa, os dados deixaram de ser apenas exemplos escritos nas páginas e passaram a ser armazenados em um banco SQLite. O sistema possui CRUD completo para todas as entidades previstas no MER.
+Nesta etapa, o sistema recebeu autenticação, controle de sessão, proteção das rotas internas e uma interface responsiva construída com Bootstrap 5.3.8.
 
-## Funcionalidades
+## Acesso ao sistema
 
-- CRUD de usuários;
-- CRUD de categorias;
-- CRUD de anúncios;
-- CRUD de perguntas e respostas;
-- CRUD de compras diretas, sem carrinho;
-- CRUD de favoritos;
-- relatórios de compras e vendas atualizados a partir do banco de dados;
-- confirmação antes de cada exclusão.
+Páginas públicas:
+
+- início;
+- login;
+- criação de conta.
+
+Áreas protegidas por login:
+
+- usuários;
+- categorias;
+- anúncios;
+- perguntas e respostas;
+- compras;
+- favoritos;
+- relatórios de compras e vendas;
+- todas as operações de cadastro, edição e exclusão.
+
+## Login para demonstração
+
+- E-mail: `anna@email.com`
+- Senha: `123456`
+
+Também é possível criar uma conta na página de cadastro. As senhas são armazenadas em formato de hash, e não como texto puro.
 
 ## Tecnologias
 
 - Python;
 - Flask;
 - Flask-SQLAlchemy;
+- Flask-Login;
 - SQLite;
+- Bootstrap 5.3.8;
 - HTML, CSS e Jinja.
 
-## Como executar
+## Como executar no Windows
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-python -m pip install -r requirements.txt
-python app.py
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+py -m pip install -r requirements.txt
+py app.py
 ```
 
 Depois, abra `http://127.0.0.1:5000` no navegador.
 
-O arquivo `vitrine_aurora.db` é criado automaticamente na primeira execução.
-
-## Repositório
+## Repositório público
 
 https://github.com/anninhamt2605-pixel/vitrine-aurora-flask.git
+
+## Sistema no PythonAnywhere
+
+O endereço público será preenchido após a implantação:
+
+`https://USUARIO.pythonanywhere.com`

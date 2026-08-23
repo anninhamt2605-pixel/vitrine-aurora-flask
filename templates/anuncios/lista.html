@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block conteudo %}
-<section class="cabecalho-pagina cabecalho-com-acao">
+{% block title %}Anúncios | Vitrine Aurora{% endblock %}
+{% block content %}
+<section class="cabecalho-lista">
     <div><span class="etiqueta">CRUD de anúncios</span><h1>Anúncios</h1><p>Gerencie os produtos disponíveis na plataforma.</p></div>
-    <a class="botao primario" href="{{ url_for('anuncio_novo') }}">+ Novo anúncio</a>
+    <a class="btn btn-aurora" href="{{ url_for('anuncio_novo') }}">+ Novo anúncio</a>
 </section>
-<div class="tabela-wrap"><table><thead><tr><th>ID</th><th>Produto</th><th>Preço</th><th>Anunciante</th><th>Categoria</th><th>Data</th><th>Ações</th></tr></thead><tbody>
-{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td><strong>{{ registro.titulo }}</strong><small>{{ registro.descricao }}</small></td><td>{{ registro.preco|moeda }}</td><td>{{ registro.usuario.nome }}</td><td>{{ registro.categoria.nome }}</td><td>{{ registro.data_publicacao|data_br }}</td><td class="acoes-tabela"><a class="acao editar" href="{{ url_for('anuncio_editar', id=registro.id) }}">Editar</a><a class="acao excluir" href="{{ url_for('anuncio_excluir', id=registro.id) }}">Excluir</a></td></tr>
-{% else %}<tr><td colspan="7" class="vazio">Nenhum anúncio cadastrado.</td></tr>{% endfor %}
+<div class="table-responsive table-card shadow-sm"><table class="table table-hover align-middle mb-0"><thead><tr><th>ID</th><th>Produto</th><th>Preço</th><th>Anunciante</th><th>Categoria</th><th>Data</th><th>Ações</th></tr></thead><tbody>
+{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td><strong>{{ registro.titulo }}</strong><small>{{ registro.descricao }}</small></td><td>{{ registro.preco|moeda }}</td><td>{{ registro.usuario.nome }}</td><td><span class="badge badge-aurora">{{ registro.categoria.nome }}</span></td><td>{{ registro.data_publicacao|data_br }}</td><td><div class="d-flex gap-2"><a class="btn btn-sm btn-outline-aurora" href="{{ url_for('anuncio_editar', id=registro.id) }}">Editar</a><a class="btn btn-sm btn-outline-danger" href="{{ url_for('anuncio_excluir', id=registro.id) }}">Excluir</a></div></td></tr>
+{% else %}<tr><td colspan="7" class="text-center text-secondary py-5">Nenhum anúncio cadastrado.</td></tr>{% endfor %}
 </tbody></table></div>
 {% endblock %}

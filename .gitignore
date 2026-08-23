@@ -1,5 +1,6 @@
 .venv/
 .venv-test/
+.venv-verify/
 venv/
 __pycache__/
 *.pyc

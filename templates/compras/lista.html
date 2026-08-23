@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block conteudo %}
-<section class="cabecalho-pagina cabecalho-com-acao">
+{% block title %}Compras | Vitrine Aurora{% endblock %}
+{% block content %}
+<section class="cabecalho-lista">
     <div><span class="etiqueta">CRUD de compras</span><h1>Compras</h1><p>Registre compras realizadas diretamente nos anúncios.</p></div>
-    <a class="botao primario" href="{{ url_for('compra_nova') }}">+ Nova compra</a>
+    <a class="btn btn-aurora" href="{{ url_for('compra_nova') }}">+ Nova compra</a>
 </section>
-<div class="tabela-wrap"><table><thead><tr><th>ID</th><th>Produto</th><th>Comprador</th><th>Quantidade</th><th>Data</th><th>Total</th><th>Ações</th></tr></thead><tbody>
-{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td>{{ registro.anuncio.titulo }}</td><td>{{ registro.comprador.nome }}</td><td>{{ registro.quantidade }}</td><td>{{ registro.data_compra|data_br }}</td><td>{{ registro.valor_total|moeda }}</td><td class="acoes-tabela"><a class="acao editar" href="{{ url_for('compra_editar', id=registro.id) }}">Editar</a><a class="acao excluir" href="{{ url_for('compra_excluir', id=registro.id) }}">Excluir</a></td></tr>
-{% else %}<tr><td colspan="7" class="vazio">Nenhuma compra cadastrada.</td></tr>{% endfor %}
+<div class="table-responsive table-card shadow-sm"><table class="table table-hover align-middle mb-0"><thead><tr><th>ID</th><th>Produto</th><th>Comprador</th><th>Quantidade</th><th>Data</th><th>Total</th><th>Ações</th></tr></thead><tbody>
+{% for registro in registros %}<tr><td>#{{ registro.id }}</td><td class="fw-semibold">{{ registro.anuncio.titulo }}</td><td>{{ registro.comprador.nome }}</td><td>{{ registro.quantidade }}</td><td>{{ registro.data_compra|data_br }}</td><td class="fw-semibold">{{ registro.valor_total|moeda }}</td><td><div class="d-flex gap-2"><a class="btn btn-sm btn-outline-aurora" href="{{ url_for('compra_editar', id=registro.id) }}">Editar</a><a class="btn btn-sm btn-outline-danger" href="{{ url_for('compra_excluir', id=registro.id) }}">Excluir</a></div></td></tr>
+{% else %}<tr><td colspan="7" class="text-center text-secondary py-5">Nenhuma compra cadastrada.</td></tr>{% endfor %}
 </tbody></table></div>
 {% endblock %}
