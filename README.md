@@ -57,6 +57,4 @@ https://github.com/anninhamt2605-pixel/vitrine-aurora-flask.git
 
 ## Sistema no PythonAnywhere
 
-O endereço público será preenchido após a implantação:
-
-`https://USUARIO.pythonanywhere.com`
+https://anninhamt2605.pythonanywhere.com

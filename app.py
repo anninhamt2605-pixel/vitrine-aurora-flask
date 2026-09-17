@@ -5,7 +5,7 @@ from pathlib import Path
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import LoginManager, UserMixin, current_user, login_required, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import event
+from sqlalchemy import event, or_
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -364,7 +364,22 @@ def categoria_excluir(id):
 @app.route("/anuncios")
 @login_required
 def anuncios():
-    return render_template("anuncios/lista.html", registros=Anuncio.query.order_by(Anuncio.id).all())
+    busca = request.args.get("busca", "").strip()
+    consulta = Anuncio.query.join(Usuario).join(Categoria)
+
+    if busca:
+        termo = f"%{busca}%"
+        consulta = consulta.filter(
+            or_(
+                Anuncio.titulo.ilike(termo),
+                Anuncio.descricao.ilike(termo),
+                Usuario.nome.ilike(termo),
+                Categoria.nome.ilike(termo),
+            )
+        )
+
+    registros = consulta.order_by(Anuncio.id).all()
+    return render_template("anuncios/lista.html", registros=registros, busca=busca)
 
 
 @app.route("/anuncios/novo", methods=["GET", "POST"])
